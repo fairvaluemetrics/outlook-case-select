@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Case Tagger – Mockup</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; color: #242424; background: #f3f2f1; }
+
+  /* ---------- Mockup chrome (NOT part of real add-in) ---------- */
+  .mock-bar {
+    background: #1f1f1f; color: #f3f3f3; padding: 8px 12px;
+    display: flex; align-items: center; gap: 12px; font-size: 12px;
+  }
+  .mock-bar .label { opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+  .mock-bar button {
+    background: #2d2d2d; color: #f3f3f3; border: 1px solid #3d3d3d;
+    padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;
+  }
+  .mock-bar button.active { background: #0078d4; border-color: #0078d4; }
+  .mock-bar .spacer { flex: 1; }
+  .mock-bar .note { opacity: 0.6; font-style: italic; }
+
+  /* ---------- Outlook-style compose window ---------- */
+  .stage { display: flex; height: calc(100vh - 36px); }
+  .compose {
+    flex: 1;
+    background: #fff;
+    display: flex; flex-direction: column;
+    border-right: 1px solid #e1dfdd;
+  }
+  .compose-ribbon {
+    background: #faf9f8;
+    border-bottom: 1px solid #e1dfdd;
+    padding: 8px 12px;
+    display: flex; gap: 8px; align-items: center;
+    font-size: 12px;
+  }
+  .ribbon-btn {
+    background: #fff; border: 1px solid #d1d1d1; border-radius: 2px;
+    padding: 6px 12px; font-size: 12px; cursor: pointer;
+  }
+  .ribbon-btn.primary { background: #0078d4; color: #fff; border-color: #0078d4; }
+  .ribbon-btn.primary:hover { background: #106ebe; }
+  .ribbon-btn:hover { background: #f3f2f1; }
+
+  .field-row {
+    display: flex; align-items: center;
+    border-bottom: 1px solid #edebe9;
+    padding: 0 12px;
+    min-height: 32px;
+  }
+  .field-row label {
+    width: 60px; color: #605e5c; font-size: 13px; flex-shrink: 0;
+  }
+  .field-row input[type="text"] {
+    flex: 1; border: 0; outline: none; padding: 6px 4px; font-size: 14px; font-family: inherit;
+    background: transparent;
+  }
+
+  /* Subject row needs to host the inline placement-A widget */
+  .subject-row { gap: 6px; }
+  .subject-row .case-inline {
+    display: none; /* shown when placement = A */
+    align-items: center; gap: 4px;
+    background: #eff6fc; border: 1px solid #c7e0f4;
+    border-radius: 12px; padding: 2px 8px 2px 10px;
+    font-size: 12px; color: #004578; cursor: pointer; white-space: nowrap;
+  }
+  .case-inline select {
+    border: 0; background: transparent; font-size: 12px; color: #004578;
+    font-family: inherit; outline: none; cursor: pointer; max-width: 220px;
+  }
+  body[data-placement="A"] .subject-row .case-inline { display: inline-flex; }
+
+  .body-area {
+    flex: 1;
+    padding: 12px;
+    color: #323130;
+  }
+  .body-area textarea {
+    width: 100%; height: 100%; border: 0; outline: none;
+    resize: none; font-family: inherit; font-size: 14px; color: inherit;
+  }
+
+  /* ---------- Task pane ---------- */
+  .pane {
+    width: 320px;
+    background: #faf9f8;
+    border-left: 1px solid #e1dfdd;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  body[data-placement="A"] .pane { width: 240px; }
+
+  .pane-tabs {
+    display: flex; border-bottom: 1px solid #e1dfdd; background: #fff;
+  }
+  .pane-tab {
+    flex: 1; text-align: center; padding: 10px 6px; font-size: 12px;
+    cursor: pointer; color: #605e5c; border-bottom: 2px solid transparent;
+    text-transform: uppercase; letter-spacing: 0.04em; user-select: none;
+  }
+  .pane-tab.active { color: #0078d4; border-bottom-color: #0078d4; font-weight: 600; }
+
+  .pane-body { padding: 12px; overflow-y: auto; flex: 1; }
+  .pane-body section { display: none; }
+  .pane-body section.active { display: block; }
+
+  .pane-header {
+    font-size: 11px; text-transform: uppercase; color: #605e5c;
+    letter-spacing: 0.05em; margin: 0 0 8px 0;
+  }
+  .row { margin-bottom: 12px; }
+  .row label { display: block; font-size: 12px; color: #605e5c; margin-bottom: 4px; }
+  .row input, .row select, .row textarea {
+    width: 100%; padding: 6px 8px; font-size: 13px;
+    border: 1px solid #d1d1d1; border-radius: 2px; background: #fff;
+    font-family: inherit;
+  }
+  .row input:focus, .row select:focus, .row textarea:focus {
+    border-color: #0078d4; outline: none; box-shadow: 0 0 0 1px #0078d4;
+  }
+  .row .hint { font-size: 11px; color: #8a8886; margin-top: 4px; }
+
+  .preview {
+    background: #fff; border: 1px dashed #d1d1d1; padding: 6px 8px;
+    border-radius: 2px; font-size: 12px; word-break: break-word; min-height: 28px;
+  }
+  .preview .label { color: #605e5c; margin-right: 4px; }
+
+  .status { min-height: 16px; font-size: 12px; color: #605e5c; margin-top: 6px; }
+  .status.error { color: #a4262c; }
+  .status.success { color: #107c10; }
+
+  .case-list { list-style: none; margin: 0; padding: 0; }
+  .case-list li {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 4px; border-bottom: 1px solid #edebe9; font-size: 13px;
+  }
+  .case-list .name { flex: 1; }
+  .case-list .meta { font-size: 11px; color: #8a8886; margin-right: 6px; }
+  .case-list button {
+    background: transparent; border: 0; cursor: pointer; color: #0078d4;
+    padding: 2px 4px; font-size: 12px;
+  }
+  .case-list button:hover { text-decoration: underline; }
+  .case-list .archived .name { color: #a19f9d; text-decoration: line-through; }
+
+  .toggle-row { display: flex; align-items: center; gap: 8px; }
+  .toggle-row label { margin: 0; }
+
+  .small { font-size: 11px; color: #8a8886; }
+
+  .btn {
+    background: #0078d4; color: #fff; border: 0; padding: 6px 12px;
+    border-radius: 2px; cursor: pointer; font-size: 13px;
+  }
+  .btn:hover { background: #106ebe; }
+  .btn.secondary { background: #fff; color: #323130; border: 1px solid #d1d1d1; }
+  .btn.secondary:hover { background: #f3f2f1; }
+  .btn.danger { background: #a4262c; }
+
+  /* ---------- Send-block dialog ---------- */
+  .modal-bg {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    align-items: center; justify-content: center; z-index: 100;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 4px; min-width: 360px; max-width: 480px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .modal h3 { margin: 0; padding: 14px 18px; border-bottom: 1px solid #edebe9; font-size: 15px; }
+  .modal .body { padding: 14px 18px; font-size: 13px; line-height: 1.5; }
+  .modal .actions {
+    padding: 12px 18px; border-top: 1px solid #edebe9; text-align: right;
+    display: flex; gap: 8px; justify-content: flex-end;
+  }
+
+  /* Indicator at top of pane that explains the platform constraint */
+  .pane-note {
+    background: #fff4ce; color: #604000; font-size: 11px;
+    padding: 6px 8px; border-bottom: 1px solid #f0d878;
+  }
+  body[data-placement="A"] .pane-note { display: block; }
+  body[data-placement="B"] .pane-note { display: none; }
+</style>
+</head>
+<body data-placement="B">
+
+<div class="mock-bar">
+  <span class="label">Mockup</span>
+  <span class="spacer"></span>
+  <span class="label">Placement:</span>
+  <button id="placA" type="button">A · Inline (compact)</button>
+  <button id="placB" type="button" class="active">B · Dedicated row</button>
+  <button id="resetData" type="button" title="Clear localStorage state">Reset data</button>
+</div>
+
+<div class="stage">
+
+  <!-- Fake Outlook compose -->
+  <div class="compose">
+    <div class="compose-ribbon">
+      <button class="ribbon-btn primary" id="sendBtn">Send</button>
+      <button class="ribbon-btn">Discard</button>
+      <button class="ribbon-btn">Attach</button>
+      <span style="margin-left:auto" class="small">Mock compose window — not real Outlook</span>
+    </div>
+
+    <div class="field-row">
+      <label>From</label>
+      <input type="text" value="me@example.com" />
+    </div>
+    <div class="field-row">
+      <label>To</label>
+      <input type="text" value="opposing.counsel@example.com" />
+    </div>
+    <div class="field-row">
+      <label>Cc</label>
+      <input type="text" value="" />
+    </div>
+
+    <div class="field-row subject-row">
+      <label>Subject</label>
+      <!-- Placement A: inline pill in subject row (visual approximation) -->
+      <span class="case-inline" id="inlineCase" title="Pick a case">
+        <select id="inlineCaseSelect" aria-label="Case">
+          <option value="">+ Tag case</option>
+        </select>
+      </span>
+      <input type="text" id="subject" placeholder="Subject" />
+    </div>
+
+    <div class="body-area">
+      <textarea placeholder="Type your message…"></textarea>
+    </div>
+  </div>
+
+  <!-- Task pane (placement B + Manage/Settings always live here) -->
+  <div class="pane">
+    <div class="pane-note">
+      Placement A note: Outlook does not let add-ins inject controls into the
+      real subject row. The pill above the subject is a mockup illusion;
+      shipping version uses this side pane (Placement B) but in compact mode.
+    </div>
+    <div class="pane-tabs">
+      <div class="pane-tab active" data-tab="tag">Tag</div>
+      <div class="pane-tab" data-tab="manage">Manage</div>
+      <div class="pane-tab" data-tab="settings">Settings</div>
+    </div>
+
+    <div class="pane-body">
+
+      <section class="active" data-section="tag">
+        <h4 class="pane-header">Case for this email</h4>
+        <div class="row">
+          <input type="text" id="search" placeholder="Search cases…" />
+        </div>
+        <div class="row">
+          <select id="caseSelect" size="1" aria-label="Case"></select>
+        </div>
+        <div class="row">
+          <div class="preview"><span class="label">Subject:</span><span id="preview">—</span></div>
+        </div>
+        <div class="status" id="tagStatus" role="status"></div>
+      </section>
+
+      <section data-section="manage">
+        <h4 class="pane-header">Cases</h4>
+        <div class="row">
+          <label>Case name</label>
+          <input type="text" id="newName" placeholder="e.g. Doe v Acme Corp" />
+        </div>
+        <div class="row">
+          <label>Client / firm</label>
+          <input type="text" id="newClient" placeholder="e.g. Doe family" />
+        </div>
+        <div class="row">
+          <button class="btn" id="addCase">Add case</button>
+        </div>
+        <h4 class="pane-header" style="margin-top:16px">Existing</h4>
+        <ul class="case-list" id="caseList"></ul>
+      </section>
+
+      <section data-section="settings">
+        <h4 class="pane-header">Display</h4>
+        <div class="row">
+          <label>Placement</label>
+          <select id="setPlacement">
+            <option value="A">A · Inline / compact</option>
+            <option value="B">B · Dedicated row (default)</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>Default sort</label>
+          <select id="setSort">
+            <option value="pinned-mru-alpha">Pinned + recent + A-Z</option>
+            <option value="mru">Most recently used</option>
+            <option value="freq">Most frequently used</option>
+            <option value="alpha">Alphabetical</option>
+            <option value="pinned-alpha">Pinned + A-Z</option>
+          </select>
+        </div>
+        <h4 class="pane-header" style="margin-top:16px">Tagging</h4>
+        <div class="row">
+          <label>Tag format</label>
+          <input type="text" id="setFormat" />
+          <div class="hint">Use <code>{caseName}</code> as the placeholder. Default: <code>{caseName}: </code></div>
+        </div>
+        <div class="row toggle-row">
+          <input type="checkbox" id="setRequired" />
+          <label for="setRequired">Block sends until a case is chosen (or marked not case related)</label>
+        </div>
+        <div class="row">
+          <button class="btn secondary" id="exportData">Export cases.json</button>
+          <button class="btn secondary" id="importBtn">Import cases.json</button>
+          <input type="file" id="importFile" accept="application/json" hidden />
+        </div>
+        <div class="status small" id="settingsStatus"></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Send-block modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>Pick a case before sending</h3>
+    <div class="body">
+      This message has no case tag. Choose a case from the list, or mark it as
+      not case related.
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="modalNotRelated">Not case related</button>
+      <button class="btn" id="modalChoose">Choose a case</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * Mockup state. Stored in localStorage so refresh keeps state.
+ * Mirrors what the real add-in keeps in Office roaming settings.
+ * ============================================================ */
+const STORE_KEY = "caseTaggerMockup.v1";
+
+const SEED = {
+  cases: [
+    { id: "kandel-v-claude",    name: "Kandel v Claude",            client: "Kandel",     status: "active",   pinned: true,  lastUsed: null, useCount: 5 },
+    { id: "smith-v-anthropic",  name: "Smith v Anthropic",          client: "Smith",      status: "active",   pinned: false, lastUsed: null, useCount: 2 },
+    { id: "acme-dispute",       name: "Acme Corp Contract Dispute", client: "Acme Corp",  status: "active",   pinned: false, lastUsed: null, useCount: 0 },
+    { id: "doe-estate",         name: "Estate of Doe",              client: "Doe family", status: "active",   pinned: false, lastUsed: null, useCount: 1 },
+    { id: "old-matter",         name: "Old Closed Matter",          client: "—",          status: "archived", pinned: false, lastUsed: null, useCount: 0 }
+  ],
+  settings: {
+    placement: "B",
+    sort: "pinned-mru-alpha",
+    tagFormat: "{caseName}: ",
+    required: true
+  },
+  mru: [],
+  selection: null
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return JSON.parse(JSON.stringify(SEED));
+    return Object.assign(JSON.parse(JSON.stringify(SEED)), JSON.parse(raw));
+  } catch (e) { return JSON.parse(JSON.stringify(SEED)); }
+}
+function saveState(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+function resetState() { localStorage.removeItem(STORE_KEY); state = loadState(); renderAll(); }
+
+let state = loadState();
+
+/* ============================================================
+ * Helpers
+ * ============================================================ */
+const NOT_RELATED = "__not_case_related__";
+
+function activeCases() { return state.cases.filter(c => c.status !== "archived"); }
+function caseById(id) { return state.cases.find(c => c.id === id); }
+
+function tagRegex() { return /^([^:\n]{1,120}):\s+/; }
+function stripTag(s) { return (s || "").replace(tagRegex(), ""); }
+function buildTag(name) { return state.settings.tagFormat.replace("{caseName}", name); }
+function knownNames() { return state.cases.map(c => c.name); }
+function subjectHasTag(s) {
+  const m = (s || "").match(tagRegex());
+  if (!m) return false;
+  const candidate = (m[1] || "").trim();
+  return knownNames().some(n => n.trim() === candidate);
+}
+
+function sortCases(cases) {
+  const mode = state.settings.sort;
+  const mruRank = new Map(state.mru.map((id, i) => [id, i]));
+  const byAlpha = (a,b) => a.name.localeCompare(b.name, undefined, {sensitivity:"base"});
+  const byMru = (a,b) => {
+    const ra = mruRank.has(a.id) ? mruRank.get(a.id) : Infinity;
+    const rb = mruRank.has(b.id) ? mruRank.get(b.id) : Infinity;
+    if (ra !== rb) return ra - rb;
+    return byAlpha(a,b);
+  };
+  const byFreq = (a,b) => (b.useCount||0) - (a.useCount||0) || byAlpha(a,b);
+  const byPinned = next => (a,b) => (a.pinned?0:1) - (b.pinned?0:1) || next(a,b);
+  const copy = cases.slice();
+  switch (mode) {
+    case "alpha":         return copy.sort(byAlpha);
+    case "mru":           return copy.sort(byMru);
+    case "freq":          return copy.sort(byFreq);
+    case "pinned-alpha":  return copy.sort(byPinned(byAlpha));
+    default:              return copy.sort(byPinned(byMru));
+  }
+}
+
+function recordUse(id) {
+  const c = caseById(id);
+  if (c) { c.useCount = (c.useCount||0) + 1; c.lastUsed = new Date().toISOString(); }
+  state.mru = [id].concat(state.mru.filter(x => x !== id)).slice(0, 10);
+  saveState(state);
+}
+
+function applyTagToSubject(name) {
+  const subjEl = document.getElementById("subject");
+  const base = stripTag(subjEl.value);
+  subjEl.value = buildTag(name) + base;
+  updatePreview();
+}
+function clearTagFromSubject() {
+  const subjEl = document.getElementById("subject");
+  subjEl.value = stripTag(subjEl.value);
+  updatePreview();
+}
+
+function updatePreview() {
+  const v = document.getElementById("subject").value;
+  document.getElementById("preview").textContent = v || "(empty)";
+}
+
+function setStatus(elId, text, cls) {
+  const el = document.getElementById(elId);
+  el.textContent = text || "";
+  el.className = "status" + (cls ? " " + cls : "");
+}
+
+/* ============================================================
+ * Renderers
+ * ============================================================ */
+function renderAll() {
+  document.body.dataset.placement = state.settings.placement;
+  document.getElementById("placA").classList.toggle("active", state.settings.placement === "A");
+  document.getElementById("placB").classList.toggle("active", state.settings.placement === "B");
+  renderCaseDropdowns();
+  renderManage();
+  renderSettings();
+  updatePreview();
+}
+
+function renderCaseDropdowns() {
+  const q = (document.getElementById("search").value || "").toLowerCase();
+  const filtered = activeCases().filter(c =>
+    !q || c.name.toLowerCase().includes(q) || (c.client||"").toLowerCase().includes(q)
+  );
+  const sorted = sortCases(filtered);
+
+  const buildOptions = (sel, includePlaceholder) => {
+    sel.innerHTML = "";
+    if (includePlaceholder) {
+      const o = document.createElement("option");
+      o.value = ""; o.textContent = "Select a case…"; o.disabled = true; o.selected = !state.selection;
+      sel.appendChild(o);
+    }
+    const notRelated = document.createElement("option");
+    notRelated.value = NOT_RELATED; notRelated.textContent = "— Not case related —";
+    sel.appendChild(notRelated);
+
+    const mruSet = new Set(state.mru);
+    const pin = document.createElement("optgroup"); pin.label = "Pinned";
+    const recent = document.createElement("optgroup"); recent.label = "Recent";
+    const all = document.createElement("optgroup"); all.label = "All";
+    for (const c of sorted) {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.client ? `${c.name}  (${c.client})` : c.name;
+      if (c.pinned) pin.appendChild(opt);
+      else if (mruSet.has(c.id)) recent.appendChild(opt);
+      else all.appendChild(opt);
+    }
+    if (pin.childElementCount) sel.appendChild(pin);
+    if (recent.childElementCount) sel.appendChild(recent);
+    if (all.childElementCount) sel.appendChild(all);
+    if (state.selection) sel.value = state.selection;
+  };
+
+  buildOptions(document.getElementById("caseSelect"), true);
+  buildOptions(document.getElementById("inlineCaseSelect"), true);
+}
+
+function renderManage() {
+  const ul = document.getElementById("caseList");
+  ul.innerHTML = "";
+  for (const c of state.cases.slice().sort((a,b) => a.name.localeCompare(b.name))) {
+    const li = document.createElement("li");
+    if (c.status === "archived") li.classList.add("archived");
+    li.innerHTML = `
+      <span class="name">${escape(c.name)}</span>
+      <span class="meta">${c.client ? escape(c.client) + " · " : ""}${c.useCount||0}×</span>
+      <button data-act="pin"     data-id="${c.id}">${c.pinned ? "Unpin" : "Pin"}</button>
+      <button data-act="rename"  data-id="${c.id}">Rename</button>
+      <button data-act="archive" data-id="${c.id}">${c.status==="archived"?"Restore":"Archive"}</button>
+      <button data-act="delete"  data-id="${c.id}" title="Delete">×</button>
+    `;
+    ul.appendChild(li);
+  }
+}
+
+function renderSettings() {
+  document.getElementById("setPlacement").value = state.settings.placement;
+  document.getElementById("setSort").value = state.settings.sort;
+  document.getElementById("setFormat").value = state.settings.tagFormat;
+  document.getElementById("setRequired").checked = !!state.settings.required;
+}
+
+function escape(s) {
+  return (s||"").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+}
+
+/* ============================================================
+ * Event wiring
+ * ============================================================ */
+document.getElementById("placA").addEventListener("click", () => {
+  state.settings.placement = "A"; saveState(state); renderAll();
+});
+document.getElementById("placB").addEventListener("click", () => {
+  state.settings.placement = "B"; saveState(state); renderAll();
+});
+document.getElementById("resetData").addEventListener("click", resetState);
+
+// Tabs
+document.querySelectorAll(".pane-tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".pane-tab").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".pane-body section").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    document.querySelector(`.pane-body section[data-section="${t.dataset.tab}"]`).classList.add("active");
+  });
+});
+
+// Case selection (both inline and pane)
+function onCasePick(value) {
+  if (!value) return;
+  state.selection = value;
+  if (value === NOT_RELATED) {
+    clearTagFromSubject();
+    setStatus("tagStatus", "Marked not case related. Subject left alone.", "success");
+  } else {
+    const c = caseById(value);
+    if (!c) return;
+    applyTagToSubject(c.name);
+    recordUse(c.id);
+    setStatus("tagStatus", `Tagged as '${c.name}'.`, "success");
+  }
+  saveState(state);
+  renderCaseDropdowns();
+}
+document.getElementById("caseSelect").addEventListener("change", e => onCasePick(e.target.value));
+document.getElementById("inlineCaseSelect").addEventListener("change", e => onCasePick(e.target.value));
+document.getElementById("subject").addEventListener("input", updatePreview);
+document.getElementById("search").addEventListener("input", renderCaseDropdowns);
+
+// Manage actions (delegated)
+document.getElementById("caseList").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const id = b.dataset.id; const act = b.dataset.act;
+  const c = caseById(id); if (!c) return;
+  if (act === "pin") c.pinned = !c.pinned;
+  if (act === "archive") c.status = c.status === "archived" ? "active" : "archived";
+  if (act === "rename") {
+    const next = prompt("Rename case", c.name);
+    if (next && next.trim()) c.name = next.trim();
+  }
+  if (act === "delete") {
+    if (confirm("Delete '" + c.name + "'?")) state.cases = state.cases.filter(x => x.id !== id);
+  }
+  saveState(state); renderAll();
+});
+
+document.getElementById("addCase").addEventListener("click", () => {
+  const name = document.getElementById("newName").value.trim();
+  const client = document.getElementById("newClient").value.trim();
+  if (!name) return;
+  state.cases.push({
+    id: "c_" + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name, client, status: "active", pinned: false, lastUsed: null, useCount: 0
+  });
+  document.getElementById("newName").value = "";
+  document.getElementById("newClient").value = "";
+  saveState(state); renderAll();
+});
+
+// Settings
+document.getElementById("setPlacement").addEventListener("change", e => {
+  state.settings.placement = e.target.value; saveState(state); renderAll();
+  setStatus("settingsStatus", "Saved.", "success");
+});
+document.getElementById("setSort").addEventListener("change", e => {
+  state.settings.sort = e.target.value; saveState(state); renderCaseDropdowns();
+  setStatus("settingsStatus", "Saved.", "success");
+});
+document.getElementById("setFormat").addEventListener("input", e => {
+  state.settings.tagFormat = e.target.value || "{caseName}: ";
+  saveState(state); setStatus("settingsStatus", "Saved.", "success");
+});
+document.getElementById("setRequired").addEventListener("change", e => {
+  state.settings.required = e.target.checked; saveState(state);
+  setStatus("settingsStatus", "Saved.", "success");
+});
+
+// Import / export
+document.getElementById("exportData").addEventListener("click", () => {
+  const data = JSON.stringify({ cases: state.cases }, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "cases.json"; a.click();
+  URL.revokeObjectURL(a.href);
+});
+document.getElementById("importBtn").addEventListener("click", () => document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const text = await f.text();
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed.cases)) {
+      state.cases = parsed.cases; saveState(state); renderAll();
+      setStatus("settingsStatus", "Imported " + parsed.cases.length + " cases.", "success");
+    } else {
+      setStatus("settingsStatus", "File missing 'cases' array.", "error");
+    }
+  } catch (err) { setStatus("settingsStatus", "Invalid JSON: " + err.message, "error"); }
+});
+
+// Send
+const modal = document.getElementById("modal");
+document.getElementById("sendBtn").addEventListener("click", () => {
+  const subject = document.getElementById("subject").value;
+  const tagged = subjectHasTag(subject) || state.selection === NOT_RELATED;
+  if (!state.settings.required || tagged) {
+    alert("Mock send: '" + (subject || "(no subject)") + "'");
+    return;
+  }
+  modal.classList.add("show");
+});
+document.getElementById("modalChoose").addEventListener("click", () => {
+  modal.classList.remove("show");
+  document.querySelector('.pane-tab[data-tab="tag"]').click();
+  document.getElementById("caseSelect").focus();
+});
+document.getElementById("modalNotRelated").addEventListener("click", () => {
+  modal.classList.remove("show");
+  state.selection = NOT_RELATED; saveState(state);
+  setStatus("tagStatus", "Marked not case related.", "success");
+  alert("Mock send: '" + document.getElementById("subject").value + "'");
+});
+
+renderAll();
+</script>
+</body>
+</html>
