@@ -1,35 +1,41 @@
 {
-  "_comment": "Edit this file to add/remove cases. No code changes needed. Reload Outlook (or close/reopen the pane) to pick up changes.",
+  "_comment": "Seed file. On first launch the add-in copies these into Outlook roaming settings; after that, edits in the Manage panel are the source of truth. Delete the roaming key 'caseTagger.cases' to re-seed from this file.",
   "cases": [
     {
       "id": "kandel-v-claude",
       "name": "Kandel v Claude",
-      "active": true,
-      "pinned": true
+      "client": "Kandel",
+      "status": "active",
+      "pinned": true,
+      "lastUsed": null,
+      "useCount": 0
     },
     {
       "id": "smith-v-anthropic",
       "name": "Smith v Anthropic",
-      "active": true,
-      "pinned": false
+      "client": "Smith",
+      "status": "active",
+      "pinned": false,
+      "lastUsed": null,
+      "useCount": 0
     },
     {
       "id": "acme-dispute",
       "name": "Acme Corp Contract Dispute",
-      "active": true,
-      "pinned": false
+      "client": "Acme Corp",
+      "status": "active",
+      "pinned": false,
+      "lastUsed": null,
+      "useCount": 0
     },
     {
       "id": "doe-estate",
       "name": "Estate of Doe",
-      "active": true,
-      "pinned": false
-    },
-    {
-      "id": "archived-matter",
-      "name": "Old Closed Matter",
-      "active": false,
-      "pinned": false
+      "client": "Doe family",
+      "status": "active",
+      "pinned": false,
+      "lastUsed": null,
+      "useCount": 0
     }
   ]
 }
