@@ -1,0 +1,36 @@
+{
+    "$schema": "./cases.schema.json",
+    "_comment": "Edit this file to add or remove cases. Restart your Outlook compose window (or click Refresh in the pane) to pick up changes. Each case may be a string or an object with id/name/aliases/order.",
+    "cases": [
+        {
+            "id": "kandel-v-claude",
+            "name": "Kandel v Claude",
+            "aliases": ["kandel", "claude defense"],
+            "order": 1
+        },
+        {
+            "id": "doe-v-acme",
+            "name": "Doe v Acme",
+            "aliases": ["doe", "acme"],
+            "order": 2
+        },
+        {
+            "id": "in-re-northwind",
+            "name": "In re Northwind Estate",
+            "aliases": ["northwind", "estate"],
+            "order": 3
+        },
+        {
+            "id": "smith-arbitration",
+            "name": "Smith Arbitration",
+            "aliases": ["smith"],
+            "order": 4
+        },
+        {
+            "id": "internal-admin",
+            "name": "Internal / Administrative",
+            "aliases": ["admin", "internal"],
+            "order": 99
+        }
+    ]
+}

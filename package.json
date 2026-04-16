@@ -1,0 +1,20 @@
+{
+    "name": "outlook-case-tagger",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Outlook compose-time add-in that tags every email's subject line with a selectable case name and blocks send if no case is chosen.",
+    "scripts": {
+        "start": "office-addin-debugging start manifest.xml desktop",
+        "stop": "office-addin-debugging stop manifest.xml",
+        "serve": "office-addin-https-reverse-proxy --url http://localhost:3001 --port 3000 & http-server . -p 3001 -c-1",
+        "serve:simple": "http-server . -p 3000 -S -C $HOME/.office-addin-dev-certs/localhost.crt -K $HOME/.office-addin-dev-certs/localhost.key -c-1",
+        "certs": "office-addin-dev-certs install",
+        "validate": "office-addin-manifest validate manifest.xml"
+    },
+    "devDependencies": {
+        "office-addin-debugging": "^5.0.0",
+        "office-addin-dev-certs": "^1.12.0",
+        "office-addin-manifest": "^1.13.0",
+        "http-server": "^14.1.1"
+    }
+}

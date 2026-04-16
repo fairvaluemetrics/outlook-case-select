@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Case Tagger</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <link rel="stylesheet" href="taskpane.css" />
+</head>
+<body>
+    <main id="app" class="ct-app" hidden>
+        <header class="ct-header">
+            <h1>Case Tagger</h1>
+            <p class="ct-subtitle">Pick a case for this email's subject line.</p>
+        </header>
+
+        <section class="ct-subject-row" aria-label="Case + subject">
+            <label class="ct-field">
+                <span class="ct-field-label">Case</span>
+                <div class="ct-select-wrap">
+                    <input
+                        id="caseSearch"
+                        type="search"
+                        class="ct-input"
+                        placeholder="Search cases…"
+                        autocomplete="off"
+                        spellcheck="false" />
+                    <ul id="caseList" class="ct-list" role="listbox" aria-label="Cases"></ul>
+                </div>
+            </label>
+
+            <label class="ct-field">
+                <span class="ct-field-label">Subject preview</span>
+                <input id="subjectPreview" type="text" class="ct-input ct-readonly" readonly />
+            </label>
+        </section>
+
+        <section class="ct-controls">
+            <div class="ct-current">
+                <span class="ct-current-label">Current tag:</span>
+                <span id="currentTag" class="ct-current-value">— none —</span>
+                <button id="clearTagBtn" type="button" class="ct-link-btn" hidden>Clear</button>
+            </div>
+
+            <div class="ct-actions">
+                <button id="markNotCaseBtn" type="button" class="ct-secondary-btn">
+                    Not case related
+                </button>
+            </div>
+        </section>
+
+        <section class="ct-sort">
+            <label for="sortMode" class="ct-field-label">Sort</label>
+            <select id="sortMode" class="ct-input">
+                <option value="pinned-mru">Pinned + Most recent</option>
+                <option value="mru">Most recently used</option>
+                <option value="alpha">Alphabetical</option>
+                <option value="manual">Manual order (cases.json)</option>
+            </select>
+        </section>
+
+        <footer class="ct-footer">
+            <p id="statusMsg" class="ct-status" role="status"></p>
+        </footer>
+    </main>
+
+    <div id="loading" class="ct-loading">Loading…</div>
+
+    <script src="taskpane.js"></script>
+</body>
+</html>

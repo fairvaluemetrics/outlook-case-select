@@ -1,0 +1,199 @@
+:root {
+    --ct-bg: #ffffff;
+    --ct-fg: #1f1f1f;
+    --ct-muted: #6b6b6b;
+    --ct-border: #d6d6d6;
+    --ct-border-strong: #8a8a8a;
+    --ct-accent: #0f6cbd;
+    --ct-accent-fg: #ffffff;
+    --ct-warn-bg: #fff4ce;
+    --ct-warn-fg: #6e4c00;
+    --ct-pin: #c79100;
+    --ct-radius: 4px;
+    --ct-gap: 8px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    color: var(--ct-fg);
+    background: var(--ct-bg);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; height: 100%; }
+
+body { padding: 12px; }
+
+.ct-app { display: flex; flex-direction: column; gap: 12px; }
+
+.ct-header h1 {
+    margin: 0 0 2px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.ct-subtitle {
+    margin: 0;
+    color: var(--ct-muted);
+    font-size: 12px;
+}
+
+.ct-subject-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--ct-border);
+    border-radius: var(--ct-radius);
+    background: #fafafa;
+}
+
+.ct-field { display: flex; flex-direction: column; gap: 4px; }
+
+.ct-field-label {
+    font-size: 12px;
+    color: var(--ct-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.ct-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--ct-border);
+    border-radius: var(--ct-radius);
+    font-size: 14px;
+    background: #fff;
+    color: var(--ct-fg);
+}
+
+.ct-input:focus {
+    outline: none;
+    border-color: var(--ct-accent);
+    box-shadow: 0 0 0 1px var(--ct-accent);
+}
+
+.ct-readonly { background: #f0f0f0; color: var(--ct-muted); }
+
+.ct-select-wrap { position: relative; }
+
+.ct-list {
+    list-style: none;
+    margin: 4px 0 0 0;
+    padding: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--ct-border);
+    border-radius: var(--ct-radius);
+    background: #fff;
+}
+
+.ct-list-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #ececec;
+}
+
+.ct-list-item:last-child { border-bottom: none; }
+
+.ct-list-item:hover,
+.ct-list-item.ct-active {
+    background: #eef4fb;
+}
+
+.ct-list-item.ct-selected {
+    background: var(--ct-accent);
+    color: var(--ct-accent-fg);
+}
+
+.ct-list-item.ct-selected .ct-pin-btn { color: #fff; }
+
+.ct-name { flex: 1; }
+
+.ct-meta {
+    font-size: 11px;
+    color: var(--ct-muted);
+}
+
+.ct-list-item.ct-selected .ct-meta { color: rgba(255,255,255,0.85); }
+
+.ct-pin-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ct-muted);
+    padding: 2px 4px;
+}
+
+.ct-pin-btn[aria-pressed="true"] { color: var(--ct-pin); }
+
+.ct-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ct-gap);
+    flex-wrap: wrap;
+}
+
+.ct-current { font-size: 13px; }
+
+.ct-current-label { color: var(--ct-muted); margin-right: 4px; }
+
+.ct-current-value { font-weight: 600; }
+
+.ct-link-btn {
+    background: none;
+    border: none;
+    color: var(--ct-accent);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 12px;
+    padding: 0 4px;
+}
+
+.ct-secondary-btn {
+    background: #fff;
+    border: 1px solid var(--ct-border-strong);
+    border-radius: var(--ct-radius);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.ct-secondary-btn:hover { background: #f3f3f3; }
+
+.ct-secondary-btn.ct-active-toggle {
+    background: var(--ct-warn-bg);
+    color: var(--ct-warn-fg);
+    border-color: var(--ct-pin);
+}
+
+.ct-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.ct-sort .ct-input { max-width: 220px; }
+
+.ct-footer { min-height: 18px; }
+
+.ct-status {
+    margin: 0;
+    font-size: 12px;
+    color: var(--ct-muted);
+}
+
+.ct-status.ct-status-error { color: #a4262c; }
+.ct-status.ct-status-ok { color: #107c10; }
+
+.ct-loading {
+    padding: 16px;
+    text-align: center;
+    color: var(--ct-muted);
+}

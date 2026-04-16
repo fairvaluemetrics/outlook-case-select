@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Case Tagger - cases.json",
+    "type": "object",
+    "properties": {
+        "cases": {
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    { "type": "string" },
+                    {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                            "id": { "type": "string" },
+                            "name": { "type": "string" },
+                            "aliases": { "type": "array", "items": { "type": "string" } },
+                            "order": { "type": "number" }
+                        },
+                        "additionalProperties": false
+                    }
+                ]
+            }
+        }
+    },
+    "required": ["cases"]
+}

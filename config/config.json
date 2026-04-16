@@ -1,0 +1,9 @@
+{
+    "_comment": "Case Tagger configuration. Path is resolved relative to taskpane.html (src/taskpane/). Adjust 'casesFile' if you move cases.json. Use {case} and {subject} placeholders in tagFormat.",
+    "casesFile": "../../config/cases.json",
+    "tagFormat": "{case}: {subject}",
+    "tagDetectRegex": "^[^:]{1,80}:\\s",
+    "defaultSort": "pinned-mru",
+    "allowNotCaseRelated": true,
+    "mruLimit": 25
+}
