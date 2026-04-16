@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Case Tagger</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <link rel="stylesheet" href="taskpane.css" />
+</head>
+<body>
+  <div class="case-tagger" id="app">
+    <div class="header">
+      <div class="title">Case</div>
+      <div class="sort-wrap">
+        <label for="sort-select" class="sort-label">Sort</label>
+        <select id="sort-select" class="sort-select" aria-label="Sort cases">
+          <option value="pinned-mru-alpha">Pinned + recent</option>
+          <option value="mru">Most recent</option>
+          <option value="alpha">Alphabetical</option>
+          <option value="pinned-alpha">Pinned + A-Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="subject-row">
+      <label for="case-select" class="sr-only">Case</label>
+      <select id="case-select" class="case-select" aria-label="Select case for this email">
+        <option value="" disabled selected>Select a case…</option>
+      </select>
+    </div>
+
+    <div class="preview" id="preview" aria-live="polite">
+      <span class="preview-label">Subject preview:</span>
+      <span class="preview-value" id="preview-value">—</span>
+    </div>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+
+    <div class="footer">
+      <button type="button" class="link-btn" id="refresh-btn" title="Reload the case list from disk">Reload cases</button>
+    </div>
+  </div>
+
+  <script src="../common/config.js"></script>
+  <script src="../common/cases.js"></script>
+  <script src="taskpane.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "outlook-case-tagger",
+  "version": "1.0.0",
+  "description": "Outlook add-in that tags every outgoing message with a case name and blocks untagged sends.",
+  "private": true,
+  "scripts": {
+    "certs": "office-addin-dev-certs install",
+    "start": "office-addin-debugging start manifest.xml",
+    "stop": "office-addin-debugging stop manifest.xml",
+    "serve": "http-server -S -C ~/.office-addin-dev-certs/localhost.crt -K ~/.office-addin-dev-certs/localhost.key -p 3000 --cors ."
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "office-addin-debugging": "^5.0.0",
+    "office-addin-dev-certs": "^1.12.0"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "_comment": "Edit this file to add/remove cases. No code changes needed. Reload Outlook (or close/reopen the pane) to pick up changes.",
+  "cases": [
+    {
+      "id": "kandel-v-claude",
+      "name": "Kandel v Claude",
+      "active": true,
+      "pinned": true
+    },
+    {
+      "id": "smith-v-anthropic",
+      "name": "Smith v Anthropic",
+      "active": true,
+      "pinned": false
+    },
+    {
+      "id": "acme-dispute",
+      "name": "Acme Corp Contract Dispute",
+      "active": true,
+      "pinned": false
+    },
+    {
+      "id": "doe-estate",
+      "name": "Estate of Doe",
+      "active": true,
+      "pinned": false
+    },
+    {
+      "id": "archived-matter",
+      "name": "Old Closed Matter",
+      "active": false,
+      "pinned": false
+    }
+  ]
+}
